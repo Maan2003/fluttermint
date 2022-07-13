@@ -41,3 +41,7 @@ paranoid-android = { git = "https://github.com/justinmoon/paranoid-android", bra
 [patch.crates-io]
 bitcoin_hashes = { version = "0.10.0", git = 'https://github.com/fedimint/bitcoin_hashes', branch = 'minimint' }
 secp256k1-zkp = { git = "https://github.com/fedimint/rust-secp256k1-zkp/", branch = "sanket-pr" }
+
+[patch.'https://github.com/fedimint/minimint'.minimint]
+git = "https://github.com/fedimint/minimint"
+rev = "d88a08f8a3aa6812114f2b427e5580536b03a67a"
