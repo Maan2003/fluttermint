@@ -169,7 +169,10 @@ pub fn decode_invoice(bolt11: String) -> anyhow::Result<String> {
     tracing::info!("rust decoding: {}", bolt11);
     let bolt11: Invoice = bolt11.parse()?;
 
-    let amount = bolt11.amount_milli_satoshis();
+    let amount = bolt11
+        .amount_milli_satoshis()
+        .map(|amt| (amt as f64 / 1000.).round() as u64);
+
     let invoice = bolt11.to_string();
     let json = json!({
         "amount": amount,
