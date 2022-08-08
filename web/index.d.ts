@@ -1,6 +1,7 @@
 export declare class WasmBridge {
     private client;
     private db;
+    _init(): Promise<void>;
     init(): Promise<boolean>;
     joinFederation(configUrl: string): Promise<void>;
     leaveFederation(): Promise<void>;

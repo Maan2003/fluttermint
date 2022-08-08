@@ -7,8 +7,7 @@ export class WasmBridge {
         // TODO: use this for more than one federations
         this.db = undefined;
     }
-    // return true if user has joined federation
-    async init() {
+    async _init() {
         this.db = await WasmDb.load("fedimint");
         document.addEventListener("visibilitychange", () => {
             // save database on hidden visibility
@@ -18,13 +17,11 @@ export class WasmBridge {
             }
         });
         // db.clone(), yay rust like js
-        let client = await init_(this.db.clone());
-        if (client !== undefined) {
-            // a client already exists
-            this.client = client;
-            return true;
-        }
-        return false;
+        this.client = await init_(this.db.clone());
+    }
+    // return true if user has joined federation
+    async init() {
+        return this.client !== undefined;
     }
     async joinFederation(configUrl) {
         this.client = await WasmClient.join_federation(this.db.clone(), configUrl);
@@ -45,7 +42,15 @@ export class WasmBridge {
         return await this.client.pay(bolt11);
     }
 }
+async function main() {
+    await wasmPromise;
+    globalThis.wasmBridge = new WasmBridge();
+    // flutter is kind of weird
+    await globalThis.wasmBridge._init();
+}
+const mainPromise = main();
 async function load() {
+    await mainPromise;
     // Download main.dart.js
     console.log("loading");
     const appRunnerPromise = globalThis._flutter.loader.loadEntrypoint({
@@ -53,8 +58,7 @@ async function load() {
             serviceWorkerVersion: globalThis.serviceWorkerVersion,
         }
     }).then(engineInitializer => engineInitializer.initializeEngine());
-    const [appRunner, _] = await Promise.all([appRunnerPromise, wasmPromise]);
-    globalThis.wasmBridge = new WasmBridge();
+    const appRunner = await appRunnerPromise;
     await appRunner.runApp();
 }
 window.addEventListener('load', load);

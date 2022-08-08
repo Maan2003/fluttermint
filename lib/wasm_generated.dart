@@ -16,6 +16,7 @@ class WasmBridge {
 
 @JS("WasmBridge")
 abstract class _WasmBridge {
+  external Promise<void> JS$_init();
   external Promise<bool> init();
   external Promise<void> joinFederation(String configUrl);
   external Promise<void> leaveFederation();
@@ -25,6 +26,12 @@ abstract class _WasmBridge {
 }
 
 extension WasmBridgeExtensions on WasmBridge {
+  Future<void> JS$_init() {
+    final Object t = this;
+    final _WasmBridge tt = t as _WasmBridge;
+    return promiseToFuture(tt.JS$_init());
+  }
+
   Future<bool> init() {
     final Object t = this;
     final _WasmBridge tt = t as _WasmBridge;
