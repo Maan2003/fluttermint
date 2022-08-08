@@ -9,12 +9,11 @@ use minimint_api::{
     encoding::{Decodable, Encodable},
 };
 use minimint_core::modules::ln::contracts::ContractId;
-use mint_client::{ln::gateway::LightningGateway, UserClient, UserClientConfig};
+use mint_client::{UserClient, UserClientConfig};
 use serde_json::json;
 
 pub struct Client {
     client: UserClient,
-    gateway_cfg: LightningGateway,
     payments: Mutex<Vec<Invoice>>,
 }
 
@@ -46,8 +45,7 @@ impl Client {
             .expect("db error");
 
         Ok(Self {
-            client: UserClient::new(cfg.clone(), db, Default::default()).await,
-            gateway_cfg: cfg.gateway,
+            client: UserClient::new(cfg.clone(), db, Default::default()),
             payments: Mutex::new(Vec::new()),
         })
     }
@@ -63,7 +61,7 @@ impl Client {
 
         let (contract_id, outpoint) = self
             .client
-            .fund_outgoing_ln_contract(&self.gateway_cfg, bolt11, &mut rng)
+            .fund_outgoing_ln_contract(bolt11, &mut rng)
             .await
             .expect("Not enough coins");
 
@@ -72,8 +70,9 @@ impl Client {
             .await
             .expect("Contract wasn't accepted in time");
 
+        let gw = self.client.fetch_gateway().await?;
         let r = http
-            .post(&format!("{}/pay_invoice", self.gateway_cfg.api))
+            .post(&format!("{}/pay_invoice", gw.api))
             .json(&contract_id)
             // .timeout(Duration::from_secs(15)) // TODO: add timeout
             .send()
@@ -90,12 +89,7 @@ impl Client {
         let amt = minimint_api::Amount::from_sat(amount);
         let confirmed_invoice = self
             .client
-            .generate_invoice(
-                amt,
-                "TODO: description".to_string(),
-                &self.gateway_cfg,
-                &mut rng,
-            )
+            .generate_invoice(amt, "TODO: description".to_string(), &mut rng)
             .await
             .expect("Couldn't create invoice");
 
