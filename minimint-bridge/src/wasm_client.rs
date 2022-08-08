@@ -60,7 +60,7 @@ impl WasmClient {
     #[wasm_bindgen]
     pub fn balance(&self) -> Promise {
         let this = self.0.clone();
-        future_to_promise(async move { Ok(JsValue::from(this.balance().await)) })
+        future_to_promise(async move { Ok(JsValue::from(this.balance().await as u32)) })
     }
 
     #[wasm_bindgen]
@@ -148,7 +148,7 @@ impl WasmDb {
                 .await
                 .expect("db error");
             let t = db
-                .transaction(&[STORE_NAME], rexie::TransactionMode::ReadWriteFlush)
+                .transaction(&[STORE_NAME], rexie::TransactionMode::ReadWrite)
                 .expect("db error");
 
             let store = t.store(STORE_NAME).expect("db error");

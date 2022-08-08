@@ -650,8 +650,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "wasi 0.9.0+wasi-snapshot-preview1",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1134,7 +1136,6 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 [[package]]
 name = "minimint-api"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "anyhow",
  "async-lock",
@@ -1168,6 +1169,7 @@ dependencies = [
  "bitcoin",
  "flutter_rust_bridge",
  "futures",
+ "getrandom 0.1.16",
  "js-sys",
  "lazy_static",
  "lightning-invoice",
@@ -1192,7 +1194,6 @@ dependencies = [
 [[package]]
 name = "minimint-core"
 version = "0.0.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "async-trait",
  "bincode",
@@ -1218,7 +1219,6 @@ dependencies = [
 [[package]]
 name = "minimint-derive"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -1229,7 +1229,6 @@ dependencies = [
 [[package]]
 name = "minimint-ln"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "async-trait",
  "bincode",
@@ -1250,7 +1249,6 @@ dependencies = [
 [[package]]
 name = "minimint-mint"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "async-trait",
  "bincode",
@@ -1270,7 +1268,6 @@ dependencies = [
 [[package]]
 name = "minimint-wallet"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1300,7 +1297,6 @@ dependencies = [
 [[package]]
 name = "mint-client"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1310,6 +1306,7 @@ dependencies = [
  "bitcoin_hashes",
  "futures",
  "hex",
+ "js-sys",
  "jsonrpsee-core",
  "jsonrpsee-types",
  "jsonrpsee-wasm-client",
@@ -1753,6 +1750,7 @@ dependencies = [
  "libc",
  "rand_core 0.4.2",
  "rdrand",
+ "wasm-bindgen",
  "winapi",
 ]
 
@@ -2240,7 +2238,6 @@ checksum = "55937e1799185b12863d447f42597ed69d9928686b8d88a1df17376a097d8369"
 [[package]]
 name = "tbs"
 version = "0.1.0"
-source = "git+https://github.com/fedimint/minimint#ebb32e7137eece50d7b4ef539d8ccb15284fe4bb"
 dependencies = [
  "bls12_381",
  "ff 0.11.1",
