@@ -26,8 +26,13 @@ pub async fn init_(db: WasmDb) -> Result<Option<WasmClient>> {
         .await
         .map_err(anyhow_to_js)?
     {
+        let client = Arc::new(client);
+        let client_poll = client.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            client_poll.poll().await;
+        });
         tracing::info!("already joined federation");
-        Ok(Some(WasmClient(Arc::new(client))))
+        Ok(Some(WasmClient(client)))
     } else {
         tracing::info!("needs to join federation");
         Ok(None)
@@ -46,7 +51,12 @@ impl WasmClient {
             .await
             .map_err(anyhow_to_js)?;
 
-        Ok(WasmClient(Arc::new(client)))
+        let client = Arc::new(client);
+        let client_poll = client.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            client_poll.poll().await;
+        });
+        Ok(WasmClient(client))
     }
 
     #[wasm_bindgen]
