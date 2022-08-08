@@ -51,7 +51,7 @@ impl Client {
     }
 
     pub async fn balance(&self) -> u64 {
-        self.client.coins().amount().milli_sat
+        (self.client.coins().amount().milli_sat as f64 / 1000.0).round() as u64
     }
 
     pub async fn pay(&self, bolt11: String) -> anyhow::Result<String> {
@@ -79,7 +79,7 @@ impl Client {
             .await
             .unwrap();
 
-        self.client.fetch_all_coins().await?;
+        self.client.fetch_all_coins().await;
 
         Ok(format!("{:?}", r))
     }
@@ -97,8 +97,10 @@ impl Client {
 
         let invoice = confirmed_invoice.invoice;
 
+        tracing::info!(%invoice, "trying to lock");
         self.payments.lock().await.push(invoice.clone());
 
+        tracing::info!(%invoice, "generated invoice");
         Ok(invoice.to_string())
     }
 
