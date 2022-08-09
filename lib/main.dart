@@ -19,13 +19,15 @@ Future<void> main() async {
 
   prefs = await SharedPreferences.getInstance();
 
-  api.init();
-
-  runApp(const ProviderScope(child: App()));
+  final bool joined = await api.init();
+  runApp(ProviderScope(child: App(joined: joined)));
 }
 
 class App extends ConsumerWidget {
-  const App({Key? key}) : super(key: key);
+  final bool joinedFederation;
+  const App({Key? key, required bool joined})
+      : joinedFederation = joined,
+        super(key: key);
 
   static const title = 'Fluttermint';
 
@@ -33,6 +35,11 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    if (joinedFederation) {
+      ref.read(prefProvider.notifier).update("this should be a bool?");
+    } else {
+      ref.read(prefProvider.notifier).update(null);
+    }
 
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
