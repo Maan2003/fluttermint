@@ -19,7 +19,7 @@ pub async fn init_(db: WasmDb) -> Result<Option<WasmClient>> {
     tracing_wasm::set_as_global_default_with_config(
         tracing_wasm::WASMLayerConfigBuilder::default()
             .set_console_config(tracing_wasm::ConsoleConfig::ReportWithConsoleColor)
-            .set_max_level(tracing::Level::DEBUG)
+            .set_max_level(tracing::Level::INFO)
             .build(),
     );
     if let Some(client) = Client::try_load(Box::new(db.mem_db))
@@ -57,6 +57,19 @@ impl WasmClient {
             client_poll.poll().await;
         });
         Ok(WasmClient(client))
+    }
+
+    #[wasm_bindgen]
+    pub fn info(&self) {
+        let coins = self.0.client.coins();
+        tracing::info!(
+            "We own {} coins with a total value of {}",
+            coins.coin_count(),
+            coins.amount()
+        );
+        for (amount, coins) in coins.coins {
+            tracing::info!("We own {} coins of denomination {}", coins.len(), amount);
+        }
     }
 
     #[wasm_bindgen]
