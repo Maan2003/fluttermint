@@ -6,12 +6,14 @@ use anyhow::anyhow;
 use futures::{stream::FuturesUnordered, StreamExt};
 use futures::lock::Mutex;
 use lightning_invoice::Invoice;
-use minimint_api::{
+use fedimint_api::{
     db::{Database, DatabaseKeyPrefixConst},
     encoding::{Decodable, Encodable},
     PeerId,
 };
-use minimint_core::modules::ln::contracts::ContractId;
+use fedimint_core::config::ClientConfig;
+use fedimint_core::modules::ln::contracts::ContractId;
+use mint_client::api::WsFederationConnect;
 use mint_client::{api::WsFederationApi, UserClient, UserClientConfig};
 use serde_json::json;
 
@@ -98,8 +100,7 @@ impl Client {
     pub async fn invoice(&self, amount: u64) -> anyhow::Result<String> {
         let mut rng = rand::rngs::OsRng::new().unwrap();
 
-        // Save the keys and invoice for later polling`
-        let amt = minimint_api::Amount::from_sat(amount);
+        let amt = fedimint_api::Amount::from_sat(amount);
         let confirmed_invoice = self
             .client
             .generate_invoice(amt, "TODO: description".to_string(), &mut rng)
@@ -170,7 +171,7 @@ impl Client {
             // Re-add old payments
             self.payments.lock().await.extend(pending_payments);
 
-            minimint_api::task::sleep(std::time::Duration::from_secs(1)).await;
+            fedimint_api::task::sleep(std::time::Duration::from_secs(1)).await;
         }
     }
 }
