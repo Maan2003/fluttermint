@@ -1,0 +1,68 @@
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+name: CI
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    name: Build
+    steps:
+      # Install apt dependencies
+      - name: Install native deps
+        run: sudo apt-get install -y curl nodejs npm clang make build-essential
+
+      # Install just build system
+      - name: Install rust x86
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          profile: minimal
+      - uses: Swatinem/rust-cache@v2
+      - name: Install just build system
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: just
+
+      # Setup rust+wasm
+      - name: Add rust WASM target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      # JS/Dart/Flutter stuff
+      - name: Install typescript
+        run: npm install typescript -g
+      - name: Install dart JS facade generator
+        run: npm install -g dart_js_facade_gen
+      - name: Install flutter
+        run: >
+          pushd .. &&
+          curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.0.5-stable.tar.xz &&
+          tar xf flutter.tar.xz &&
+          export PATH="$PATH:$(pwd)/flutter/bin" &&
+          echo "$(pwd)/flutter/bin" >> $GITHUB_PATH &&
+          flutter precache &&
+          flutter channel stable &&
+          flutter upgrade &&
+          popd
+
+      # Build fluttermint for the web
+      - name: Checkout fluttermint
+        uses: actions/checkout@v2
+      - name: Build fluttermint
+        run: >
+          just wasm --dev &&
+          rm build/web/pkg/.gitignore
+
+      - name: Deploy
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
