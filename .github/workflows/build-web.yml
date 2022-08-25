@@ -58,7 +58,8 @@ jobs:
       - name: Build fluttermint
         run: >
           just wasm --dev &&
-          rm build/web/pkg/.gitignore
+          rm build/web/pkg/.gitignore &&
+          echo "fm-app.sirion.io" > build/web/CNAME
 
       - name: Deploy
         if: ${{ github.ref == 'refs/heads/master' }}
